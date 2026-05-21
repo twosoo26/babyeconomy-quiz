@@ -213,10 +213,16 @@ async function main() {
     }
   }
 
-  // 방법 4: INSTAGRAM_USER_ID 폴백
+  // 방법 4: INSTAGRAM_USER_ID Secret 폴백
   if (!realIgId) {
-    console.warn(`  ⚠️ [방법4] 모든 자동 조회 실패 → INSTAGRAM_USER_ID(${IG_USER_ID}) 직접 사용`);
+    console.warn(`  ⚠️ [방법4] INSTAGRAM_USER_ID Secret(${IG_USER_ID}) 직접 사용`);
     realIgId = IG_USER_ID;
+  }
+
+  // 방법 5: 하드코딩 폴백 (soo_tationary 계정 ID)
+  const HARDCODED_IG_ID = '17841475989162828';
+  if (!realIgId || realIgId === IG_USER_ID) {
+    console.warn(`  ⚠️ [방법5] 하드코딩 ID(${HARDCODED_IG_ID}) 병행 시도`);
   }
 
   const ACTUAL_ID    = realIgId;
@@ -224,27 +230,28 @@ async function main() {
   console.log(`  ✅ 계정 ID 확정: ${ACTUAL_ID}`);
   console.log(`  ✅ 사용 토큰: ${pageAccessToken ? 'Page Access Token' : 'User Access Token'}`);
 
-  // ── 확정된 ID 유효성 검증 ────────────────────────────────
+  // ── 확정된 ID 유효성 검증 (비치명적) ────────────────────
   console.log('\n[검증] Instagram ID 유효성 검증 중...');
+  let verifiedId = ACTUAL_ID;
   try {
     const verifyUrl = new URL(`${GRAPH_BASE}/${ACTUAL_ID}`);
-    verifyUrl.searchParams.set('fields', 'id,username,name');
+    verifyUrl.searchParams.set('fields', 'id,name');
     verifyUrl.searchParams.set('access_token', ACTUAL_TOKEN);
     const verifyData = await (await fetch(verifyUrl.toString())).json();
     if (verifyData.error) {
-      console.error(`  ❌ ID 검증 실패: ${verifyData.error.message}`);
-      console.error(`     code: ${verifyData.error.code}`);
-      console.error('  → INSTAGRAM_USER_ID Secret 값이 잘못됐을 수 있습니다.');
-      process.exit(1);
+      console.warn(`  ⚠️ ID(${ACTUAL_ID}) 검증 실패: ${verifyData.error.message}`);
+      console.warn(`  → 하드코딩 ID(${HARDCODED_IG_ID})로 재시도`);
+      verifiedId = HARDCODED_IG_ID;
+    } else {
+      console.log(`  id  : ${verifyData.id}`);
+      console.log(`  name: ${verifyData.name ?? '(없음)'}`);
+      console.log('  ✅ ID 유효성 확인 완료');
     }
-    console.log(`  id      : ${verifyData.id}`);
-    console.log(`  username: ${verifyData.username ?? '(없음)'}`);
-    console.log(`  name    : ${verifyData.name ?? '(없음)'}`);
-    console.log('  ✅ ID 유효성 확인 완료');
   } catch (e) {
-    console.error(`  ❌ ID 검증 중 오류: ${e.message}`);
-    process.exit(1);
+    console.warn(`  ⚠️ ID 검증 오류: ${e.message} → 하드코딩 ID로 재시도`);
+    verifiedId = HARDCODED_IG_ID;
   }
+  const FINAL_ID = verifiedId;
 
   // ── 이미지 URL 접근 확인 ──────────────────────────────────
   console.log('\n[0] 이미지 URL 확인 중...');
@@ -264,7 +271,7 @@ async function main() {
   const containerIds = [];
   for (let i = 1; i <= CARD_COUNT; i++) {
     const imageUrl = `${BASE_URL}/api/card-image?card=${i}`;
-    const { id } = await igPost(`/${ACTUAL_ID}/media`, {
+    const { id } = await igPost(`/${FINAL_ID}/media`, {
       image_url: imageUrl,
       is_carousel_item: true,
       _token_override: ACTUAL_TOKEN,
@@ -283,7 +290,7 @@ async function main() {
   // ── Carousel 컨테이너 생성 ────────────────────────────────
   console.log('\n[3] Carousel 컨테이너 생성 중...');
   const caption = buildCaption(today);
-  const { id: carouselId } = await igPost(`/${ACTUAL_ID}/media`, {
+  const { id: carouselId } = await igPost(`/${FINAL_ID}/media`, {
     media_type: 'CAROUSEL',
     children: containerIds.join(','),
     caption,
@@ -295,7 +302,7 @@ async function main() {
 
   // ── 게시 ──────────────────────────────────────────────────
   console.log('\n[4] 게시 중...');
-  const { id: postId } = await igPost(`/${ACTUAL_ID}/media_publish`, {
+  const { id: postId } = await igPost(`/${FINAL_ID}/media_publish`, {
     creation_id: carouselId,
     _token_override: ACTUAL_TOKEN,
   });

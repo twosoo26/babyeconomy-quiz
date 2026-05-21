@@ -1,7 +1,7 @@
 {
   "date": "2026-05-21",
-  "quizNumber": 2,
-  "executedAt": "2026-05-21T08:08:50.051Z",
+  "quizNumber": 6,
+  "executedAt": "2026-05-21T13:18:30.693Z",
   "status": "failure",
   "postId": null,
   "error": "Instagram API 오류 [/17841475989162828/media] code=1"

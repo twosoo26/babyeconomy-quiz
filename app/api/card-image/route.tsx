@@ -3,7 +3,6 @@ import { NextRequest } from 'next/server';
 import todayData from '@/data/today.json';
 
 export const runtime = 'edge';
-export const dynamic = 'force-dynamic';
 
 const W = 1080;
 const H = 1350;
@@ -324,6 +323,9 @@ export async function GET(request: NextRequest) {
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error('[card-image] 오류:', msg);
-    return new Response(`이미지 생성 실패: ${msg}`, { status: 500 });
+    return new Response(`이미지 생성 실패: ${msg}`, {
+      status: 500,
+      headers: { 'Content-Type': 'text/plain', 'Cache-Control': 'no-store' },
+    });
   }
 }

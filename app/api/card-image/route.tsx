@@ -305,10 +305,9 @@ export async function GET(request: NextRequest) {
       loadFont(request, isCover ? 'NanumGothic-Regular.ttf'   : 'Pretendard-Regular.otf'),
     ]);
 
-    const fontName = isCover ? 'display' : 'pretendard';
     const fonts = [
-      { name: fontName,                          data: fontBold, weight: (isCover ? 900 : 700) as 700 | 900, style: 'normal' as const },
-      { name: isCover ? 'body' : 'pretendard',   data: fontReg,  weight: 400 as const,                        style: 'normal' as const },
+      { name: 'display', data: fontBold, weight: (isCover ? 900 : 700) as 700 | 900, style: 'normal' as const },
+      { name: 'body',    data: fontReg,  weight: 400 as const,                        style: 'normal' as const },
     ];
 
     const elements: Record<number, React.ReactElement> = {

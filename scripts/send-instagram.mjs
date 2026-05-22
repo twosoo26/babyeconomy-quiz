@@ -235,22 +235,28 @@ async function main() {
   let verifiedId = ACTUAL_ID;
   try {
     const verifyUrl = new URL(`${GRAPH_BASE}/${ACTUAL_ID}`);
-    verifyUrl.searchParams.set('fields', 'id,name');
+    verifyUrl.searchParams.set('fields', 'id,name,username');
     verifyUrl.searchParams.set('access_token', ACTUAL_TOKEN);
     const verifyData = await (await fetch(verifyUrl.toString())).json();
     if (verifyData.error) {
       console.warn(`  ⚠️ ID(${ACTUAL_ID}) 검증 실패: ${verifyData.error.message}`);
-      console.warn(`  → 하드코딩 ID(${HARDCODED_IG_ID})로 재시도`);
+      console.warn(`  → 하드코딩 ID(${HARDCODED_IG_ID})로 전환`);
+      verifiedId = HARDCODED_IG_ID;
+    } else if (!verifyData.username) {
+      console.warn(`  ⚠️ ID(${ACTUAL_ID}) = "${verifyData.name}" → Instagram 계정이 아님 (Facebook 페이지/유저)`);
+      console.warn(`  → 하드코딩 ID(${HARDCODED_IG_ID})로 전환`);
       verifiedId = HARDCODED_IG_ID;
     } else {
-      console.log(`  id  : ${verifyData.id}`);
-      console.log(`  name: ${verifyData.name ?? '(없음)'}`);
-      console.log('  ✅ ID 유효성 확인 완료');
+      console.log(`  id      : ${verifyData.id}`);
+      console.log(`  username: @${verifyData.username}`);
+      console.log(`  name    : ${verifyData.name ?? '(없음)'}`);
+      console.log('  ✅ Instagram 계정 확인 완료');
     }
   } catch (e) {
-    console.warn(`  ⚠️ ID 검증 오류: ${e.message} → 하드코딩 ID로 재시도`);
+    console.warn(`  ⚠️ ID 검증 오류: ${e.message} → 하드코딩 ID로 전환`);
     verifiedId = HARDCODED_IG_ID;
   }
+  console.log(`  ✅ 최종 사용 ID: ${verifiedId}`);
   const FINAL_ID = verifiedId;
 
   // ── 이미지 URL 접근 확인 ──────────────────────────────────

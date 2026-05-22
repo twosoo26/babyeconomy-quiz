@@ -54,7 +54,7 @@ function BrandBar({ light = false }: { light?: boolean }) {
         {d}
       </span>
       <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-        <div style={{ width: 10, height: 10, background: C.yellow, borderRadius: 2 }} />
+        <div style={{ width: 10, height: 10, background: C.yellow, borderRadius: 2, display: 'flex' }} />
         <span style={{ color: light ? C.greenMid : C.white, fontSize: 24, fontWeight: 700, letterSpacing: 5, fontFamily: 'body' }}>
           어린이 경제 퀴즈
         </span>
@@ -69,18 +69,6 @@ function CoverCard() {
   const cat = todayData.category ?? '';
   return (
     <Shell bg={C.greenDark}>
-      {/* 배경 장식 원 */}
-      <div style={{
-        position: 'absolute', right: -120, top: -120,
-        width: 500, height: 500, borderRadius: '50%',
-        background: 'rgba(255,255,255,0.04)', display: 'flex',
-      }} />
-      <div style={{
-        position: 'absolute', left: -80, bottom: 200,
-        width: 320, height: 320, borderRadius: '50%',
-        background: 'rgba(255,255,255,0.03)', display: 'flex',
-      }} />
-
       <div style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: '100px 80px 0' }}>
         {/* 카테고리 뱃지 */}
         <div style={{
@@ -95,7 +83,7 @@ function CoverCard() {
 
         {/* 퀴즈 번호 */}
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 32 }}>
-          <span style={{ color: C.yellow, fontSize: 52, fontWeight: 900, fontFamily: 'display' }}>
+          <span style={{ color: C.yellow, fontSize: 52, fontWeight: 700, fontFamily: 'display' }}>
             #{String(num).padStart(3, '0')}
           </span>
           <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 32, fontFamily: 'body' }}>/ 100</span>
@@ -103,17 +91,17 @@ function CoverCard() {
 
         {/* 메인 타이틀 */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <span style={{ fontSize: 86, fontWeight: 900, color: C.white, lineHeight: 1.05, fontFamily: 'display' }}>
+          <span style={{ fontSize: 86, fontWeight: 700, color: C.white, lineHeight: 1.05, fontFamily: 'display' }}>
             오늘의
           </span>
-          <span style={{ fontSize: 86, fontWeight: 900, color: C.yellow, lineHeight: 1.05, fontFamily: 'display' }}>
+          <span style={{ fontSize: 86, fontWeight: 700, color: C.yellow, lineHeight: 1.05, fontFamily: 'display' }}>
             경제 퀴즈!
           </span>
         </div>
 
-        <div style={{ marginTop: 64 }}>
+        <div style={{ display: 'flex', marginTop: 64 }}>
           <span style={{ fontSize: 36, color: 'rgba(255,255,255,0.6)', fontFamily: 'body' }}>
-            💡 아이와 함께 맞혀보세요
+            아이와 함께 맞혀보세요
           </span>
         </div>
       </div>
@@ -133,28 +121,29 @@ function QuestionCard() {
 
         {/* 상단 카드번호 */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 60 }}>
-          <div style={{ width: 8, height: 52, background: C.greenMid, borderRadius: 4, flexShrink: 0 }} />
+          <div style={{ width: 8, height: 52, background: C.greenMid, borderRadius: 4, flexShrink: 0, display: 'flex' }} />
           <span style={{ fontSize: 30, color: C.greenMid, fontWeight: 700, fontFamily: 'body', letterSpacing: 2 }}>
             문제 · #{num}
           </span>
         </div>
 
         {/* Q 마크 */}
-        <span style={{ fontSize: 120, fontWeight: 900, color: C.greenMid, lineHeight: 1, fontFamily: 'display', marginBottom: 40 }}>
+        <span style={{ fontSize: 120, fontWeight: 700, color: C.greenMid, lineHeight: 1, fontFamily: 'display', marginBottom: 40 }}>
           Q.
         </span>
 
         {/* 문제 텍스트 */}
         <span style={{
           fontSize: 52, fontWeight: 700, color: C.dark,
-          lineHeight: 1.45, fontFamily: 'display', wordBreak: 'keep-all',
+          lineHeight: 1.45, fontFamily: 'display',
         }}>
           {quiz}
         </span>
 
-        <div style={{ marginTop: 'auto', paddingBottom: 40 }}>
+        {/* 하단 힌트 텍스트 — flex:1 spacer 대신 marginTop 고정 */}
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'flex-end', paddingBottom: 40 }}>
           <span style={{ fontSize: 30, color: C.gray, fontFamily: 'body' }}>
-            👇 다음 장에서 힌트 확인!
+            다음 장에서 힌트 확인!
           </span>
         </div>
       </div>
@@ -172,26 +161,24 @@ function HintCard() {
 
         <span style={{ fontSize: 110, marginBottom: 32, display: 'flex' }}>🤔</span>
 
-        <span style={{ fontSize: 72, fontWeight: 900, color: C.dark, lineHeight: 1.1, fontFamily: 'display', textAlign: 'center', marginBottom: 40 }}>
+        <span style={{ fontSize: 72, fontWeight: 700, color: C.dark, lineHeight: 1.1, fontFamily: 'display', textAlign: 'center', marginBottom: 40 }}>
           잠깐!
         </span>
 
         <span style={{
           fontSize: 42, fontWeight: 700, color: C.greenMid,
-          lineHeight: 1.4, fontFamily: 'display', textAlign: 'center', wordBreak: 'keep-all',
+          lineHeight: 1.4, fontFamily: 'display', textAlign: 'center',
         }}>
-          3초 동안{'\n'}정답을 생각해봐요
+          3초 동안 정답을 생각해봐요
         </span>
 
-        <div style={{
-          display: 'flex', gap: 16, marginTop: 64,
-        }}>
+        <div style={{ display: 'flex', gap: 16, marginTop: 64 }}>
           {['3', '2', '1'].map((n) => (
             <div key={n} style={{
               width: 72, height: 72, borderRadius: '50%',
               background: C.greenMid, display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <span style={{ fontSize: 36, fontWeight: 900, color: C.white, fontFamily: 'display' }}>{n}</span>
+              <span style={{ fontSize: 36, fontWeight: 700, color: C.white, fontFamily: 'display' }}>{n}</span>
             </div>
           ))}
         </div>
@@ -206,13 +193,6 @@ function AnswerCard() {
   const ans = todayData.answer ?? '';
   return (
     <Shell bg={C.greenMid}>
-      {/* 배경 장식 */}
-      <div style={{
-        position: 'absolute', right: -60, bottom: 100,
-        width: 400, height: 400, borderRadius: '50%',
-        background: 'rgba(255,255,255,0.06)', display: 'flex',
-      }} />
-
       <div style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: '80px 80px 0', justifyContent: 'center', alignItems: 'center' }}>
 
         <span style={{ fontSize: 52, fontWeight: 700, color: 'rgba(255,255,255,0.7)', fontFamily: 'body', marginBottom: 32, letterSpacing: 4 }}>
@@ -223,14 +203,15 @@ function AnswerCard() {
         <div style={{
           background: C.yellow, borderRadius: 20,
           padding: '32px 64px', marginBottom: 48,
+          display: 'flex',
         }}>
-          <span style={{ fontSize: 96, fontWeight: 900, color: C.dark, fontFamily: 'display', letterSpacing: -2 }}>
+          <span style={{ fontSize: 96, fontWeight: 700, color: C.dark, fontFamily: 'display' }}>
             {ans}
           </span>
         </div>
 
         <span style={{ fontSize: 44, fontWeight: 700, color: 'rgba(255,255,255,0.8)', fontFamily: 'body' }}>
-          맞혔나요? 🎉
+          맞혔나요?
         </span>
       </div>
       <BrandBar />
@@ -247,7 +228,7 @@ function ExplanationCard() {
 
         {/* 헤더 */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 40 }}>
-          <div style={{ width: 8, height: 52, background: C.greenMid, borderRadius: 4 }} />
+          <div style={{ width: 8, height: 52, background: C.greenMid, borderRadius: 4, display: 'flex' }} />
           <span style={{ fontSize: 30, color: C.greenMid, fontWeight: 700, fontFamily: 'body', letterSpacing: 2 }}>
             이렇게 이해해요!
           </span>
@@ -262,23 +243,27 @@ function ExplanationCard() {
           <span style={{ fontSize: 30, color: C.gray, fontFamily: 'body' }}>Q. {quiz}</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <span style={{ fontSize: 28, color: C.gray, fontFamily: 'body' }}>A.</span>
-            <span style={{ fontSize: 36, fontWeight: 900, color: C.greenMid, fontFamily: 'display' }}>{answer}</span>
+            <span style={{ fontSize: 36, fontWeight: 700, color: C.greenMid, fontFamily: 'display' }}>{answer}</span>
           </div>
         </div>
 
         {/* 구분선 */}
-        <div style={{ height: 2, background: `linear-gradient(90deg, ${C.greenMid}, transparent)`, marginBottom: 36 }} />
+        <div style={{ height: 2, background: C.greenMid, marginBottom: 36, display: 'flex' }} />
 
         {/* 설명 */}
-        <span style={{
-          fontSize: 38, color: C.dark, lineHeight: 1.7,
-          fontFamily: 'body', fontWeight: 400, wordBreak: 'keep-all', flex: 1,
+        <div style={{
+          flex: 1, display: 'flex', alignItems: 'flex-start',
         }}>
-          {explanation}
-        </span>
+          <span style={{
+            fontSize: 38, color: C.dark, lineHeight: 1.7,
+            fontFamily: 'body', fontWeight: 400,
+          }}>
+            {explanation}
+          </span>
+        </div>
 
         {/* 해시태그 */}
-        <div style={{ paddingBottom: 16 }}>
+        <div style={{ display: 'flex', paddingBottom: 16 }}>
           <span style={{ fontSize: 24, color: C.gray, fontFamily: 'body' }}>
             #초등경제교육 #어린이경제 #경제퀴즈 #용돈교육 #3040학부모
           </span>
@@ -297,13 +282,12 @@ export async function GET(request: NextRequest) {
       return new Response('card 파라미터는 1~5 사이여야 합니다.', { status: 400 });
     }
 
-    const isCover = cardNum === 1;
-    const fontBold = loadFont(isCover ? 'NanumGothic-ExtraBold.ttf' : 'Pretendard-Bold.otf');
-    const fontReg  = loadFont(isCover ? 'NanumGothic-Regular.ttf'   : 'Pretendard-Regular.otf');
+    const fontBold = loadFont('Pretendard-Bold.otf');
+    const fontReg  = loadFont('Pretendard-Regular.otf');
 
     const fonts = [
-      { name: 'display', data: fontBold, weight: (isCover ? 900 : 700) as 700 | 900, style: 'normal' as const },
-      { name: 'body',    data: fontReg,  weight: 400 as const,                        style: 'normal' as const },
+      { name: 'display', data: fontBold, weight: 700 as const, style: 'normal' as const },
+      { name: 'body',    data: fontReg,  weight: 400 as const, style: 'normal' as const },
     ];
 
     const elements: Record<number, React.ReactElement> = {

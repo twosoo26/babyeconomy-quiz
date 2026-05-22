@@ -3,6 +3,7 @@ import { NextRequest } from 'next/server';
 import todayData from '@/data/today.json';
 
 export const runtime = 'edge';
+export const dynamic = 'force-dynamic';
 
 const W = 1080;
 const H = 1350;

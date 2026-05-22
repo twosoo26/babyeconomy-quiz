@@ -298,11 +298,24 @@ export async function GET(request: NextRequest) {
       5: <ExplanationCard />,
     };
 
-    return new ImageResponse(elements[cardNum], { width: W, height: H, fonts });
+    const imgRes = new ImageResponse(elements[cardNum], { width: W, height: H, fonts });
+    const buf = await imgRes.arrayBuffer();
+
+    if (buf.byteLength < 1000) {
+      return new Response(`[debug] card ${cardNum} rendered ${buf.byteLength} bytes`, {
+        status: 500,
+        headers: { 'Content-Type': 'text/plain', 'Cache-Control': 'no-store' },
+      });
+    }
+
+    return new Response(buf, {
+      status: 200,
+      headers: { 'Content-Type': 'image/png', 'Cache-Control': 'no-store' },
+    });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error('[card-image] 오류:', msg);
-    return new Response(`이미지 생성 실패: ${msg}`, {
+    return new Response(`[debug] 예외 발생: ${msg}`, {
       status: 500,
       headers: { 'Content-Type': 'text/plain', 'Cache-Control': 'no-store' },
     });

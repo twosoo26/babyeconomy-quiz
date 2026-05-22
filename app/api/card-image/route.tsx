@@ -302,7 +302,7 @@ export async function GET(request: NextRequest) {
     const buf = await imgRes.arrayBuffer();
 
     if (buf.byteLength < 1000) {
-      return new Response(`[debug] card ${cardNum} rendered ${buf.byteLength} bytes`, {
+      return new Response(`이미지 렌더링 실패 (card ${cardNum}, ${buf.byteLength} bytes)`, {
         status: 500,
         headers: { 'Content-Type': 'text/plain', 'Cache-Control': 'no-store' },
       });
@@ -315,7 +315,7 @@ export async function GET(request: NextRequest) {
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error('[card-image] 오류:', msg);
-    return new Response(`[debug] 예외 발생: ${msg}`, {
+    return new Response(`이미지 생성 실패: ${msg}`, {
       status: 500,
       headers: { 'Content-Type': 'text/plain', 'Cache-Control': 'no-store' },
     });

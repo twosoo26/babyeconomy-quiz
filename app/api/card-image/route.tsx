@@ -1,8 +1,10 @@
 import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
+import { readFileSync } from 'fs';
+import path from 'path';
 import todayData from '@/data/today.json';
 
-export const runtime = 'edge';
+export const dynamic = 'force-dynamic';
 
 const W = 1080;
 const H = 1350;
@@ -21,13 +23,9 @@ const C = {
   grayLight:  '#F5F5F5',
 };
 
-async function loadFont(request: NextRequest, filename: string): Promise<ArrayBuffer> {
-  const origin = new URL(request.url).origin;
-  const res = await fetch(`${origin}/fonts/${filename}`, { signal: AbortSignal.timeout(10_000) });
-  if (!res.ok) throw new Error(`폰트 로딩 실패: ${filename}`);
-  const buf = await res.arrayBuffer();
-  if (buf.byteLength < 1000) throw new Error(`폰트 파일 비정상: ${filename}`);
-  return buf;
+function loadFont(filename: string): ArrayBuffer {
+  const buf = readFileSync(path.join(process.cwd(), 'public', 'fonts', filename));
+  return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer;
 }
 
 // ── 공통 카드 외곽 ──────────────────────────────────────────
@@ -300,10 +298,8 @@ export async function GET(request: NextRequest) {
     }
 
     const isCover = cardNum === 1;
-    const [fontBold, fontReg] = await Promise.all([
-      loadFont(request, isCover ? 'NanumGothic-ExtraBold.ttf' : 'Pretendard-Bold.otf'),
-      loadFont(request, isCover ? 'NanumGothic-Regular.ttf'   : 'Pretendard-Regular.otf'),
-    ]);
+    const fontBold = loadFont(isCover ? 'NanumGothic-ExtraBold.ttf' : 'Pretendard-Bold.otf');
+    const fontReg  = loadFont(isCover ? 'NanumGothic-Regular.ttf'   : 'Pretendard-Regular.otf');
 
     const fonts = [
       { name: 'display', data: fontBold, weight: (isCover ? 900 : 700) as 700 | 900, style: 'normal' as const },

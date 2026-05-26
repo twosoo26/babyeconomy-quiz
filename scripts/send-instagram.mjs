@@ -27,7 +27,12 @@ if (MISSING.length) {
 
 const GRAPH_BASE    = 'https://graph.facebook.com/v22.0';
 const FB_PAGE_ID    = '61572139667323';
-const CARD_COUNT    = 5;
+const CARD_COUNT    = parseInt(process.env.CARD_COUNT ?? '5', 10);
+// TODAY_FILE: 읽을 데이터 파일 (기본 today.json, B안은 today-planb.json)
+const TODAY_FILE    = process.env.TODAY_FILE ?? 'today.json';
+// IMAGE_API: 이미지 생성 API 경로 (기본 /api/card-image, B안은 /api/planb-image)
+const IMAGE_API     = process.env.IMAGE_API  ?? '/api/card-image';
+const RESULT_FILE   = process.env.RESULT_FILE ?? 'publish-result.json';
 const POLL_INTERVAL = 5_000;
 const POLL_TIMEOUT  = 120_000;
 
@@ -93,6 +98,12 @@ async function waitForContainer(id, label, token) {
 }
 
 function buildCaption(today) {
+  // B안: caption 필드 직접 사용
+  if (today.caption) {
+    const c = today.caption;
+    return c.length > 2200 ? c.slice(0, 2197) + '...' : c;
+  }
+  // 퀴즈: 자동 생성
   const date = (today.date || '').replace(/-/g, '.');
   const lines = [
     `💰 오늘의 경제 퀴즈 #${today.number}`,
@@ -114,15 +125,15 @@ function buildCaption(today) {
 }
 
 function saveResult(result) {
-  writeFileSync(join(DATA_DIR, 'publish-result.json'), JSON.stringify(result, null, 2), 'utf-8');
+  writeFileSync(join(DATA_DIR, RESULT_FILE), JSON.stringify(result, null, 2), 'utf-8');
 }
 
 async function main() {
   console.log('📸 Instagram 경제 퀴즈 게시 시작...\n');
 
-  const today = JSON.parse(readFileSync(join(DATA_DIR, 'today.json'), 'utf-8'));
-  console.log(`   퀴즈 #${today.number}: ${today.quiz}`);
-  console.log(`   정답: ${today.answer}\n`);
+  const today = JSON.parse(readFileSync(join(DATA_DIR, TODAY_FILE), 'utf-8'));
+  console.log(`   파일: ${TODAY_FILE} | API: ${IMAGE_API}`);
+  console.log(`   #${today.number}: ${today.quiz ?? today.title ?? ''}`);
 
   const { default: fetch } = await import('node-fetch');
 
@@ -262,7 +273,7 @@ async function main() {
   // ── 이미지 URL 접근 확인 ──────────────────────────────────
   console.log('\n[0] 이미지 URL 확인 중...');
   for (let i = 1; i <= CARD_COUNT; i++) {
-    const url = `${BASE_URL}/api/card-image?card=${i}`;
+    const url = `${BASE_URL}${IMAGE_API}?card=${i}`;
     const res = await fetch(url, { method: 'HEAD', signal: AbortSignal.timeout(10_000) });
     console.log(`  카드 ${i}: HTTP ${res.status}`);
     if (!res.ok) {
@@ -276,7 +287,7 @@ async function main() {
   console.log(`[1] 이미지 컨테이너 생성 중 (${CARD_COUNT}장)...`);
   const containerIds = [];
   for (let i = 1; i <= CARD_COUNT; i++) {
-    const imageUrl = `${BASE_URL}/api/card-image?card=${i}`;
+    const imageUrl = `${BASE_URL}${IMAGE_API}?card=${i}`;
     const { id } = await igPost(`/${FINAL_ID}/media`, {
       image_url: imageUrl,
       is_carousel_item: true,
@@ -329,7 +340,7 @@ async function main() {
 main().catch((err) => {
   console.error('\n💥 오류:', err.message);
   let today = { date: '', number: 0 };
-  try { today = JSON.parse(readFileSync(join(DATA_DIR, 'today.json'), 'utf-8')); } catch {}
+  try { today = JSON.parse(readFileSync(join(DATA_DIR, TODAY_FILE), 'utf-8')); } catch {}
   saveResult({
     date: today.date,
     quizNumber: today.number,

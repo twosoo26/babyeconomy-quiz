@@ -8,7 +8,10 @@
     "start": "next start",
     "pick": "node scripts/pick-quiz.mjs",
     "instagram": "node scripts/send-instagram.mjs",
-    "daily": "node scripts/pick-quiz.mjs && node scripts/send-instagram.mjs"
+    "daily": "node scripts/pick-quiz.mjs && node scripts/send-instagram.mjs",
+    "pick-planb": "node scripts/pick-planb.mjs",
+    "instagram-planb": "TODAY_FILE=today-planb.json IMAGE_API=/api/planb-image RESULT_FILE=publish-result-planb.json node scripts/send-instagram.mjs",
+    "daily-planb": "node scripts/pick-planb.mjs && TODAY_FILE=today-planb.json IMAGE_API=/api/planb-image RESULT_FILE=publish-result-planb.json node scripts/send-instagram.mjs"
   },
   "dependencies": {
     "next": "14.2.35",

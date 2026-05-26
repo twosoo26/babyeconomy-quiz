@@ -1,0 +1,86 @@
+name: Daily Economy Plan-B
+
+on:
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  post-planb:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Node.js 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: 의존성 설치
+        run: npm ci --prefer-offline=false
+
+      # ── 오늘의 B안 콘텐츠 선택 ─────────────────────────────────
+      - name: 오늘의 B안 선택
+        run: npm run pick-planb
+        env:
+          NODE_NO_WARNINGS: '1'
+
+      # ── Git 커밋 & Vercel 재빌드 트리거 ─────────────────────────
+      - name: today-planb.json & planb-index.json 커밋
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/today-planb.json data/planb-index.json
+          git diff --staged --quiet || git commit -m "chore: daily planb update $(date +'%Y-%m-%d')"
+          git push
+
+      # ── Vercel 재빌드 대기 (5분) ──────────────────────────────
+      - name: Vercel 빌드 대기
+        run: |
+          echo "Vercel 재빌드 완료 대기 중..."
+          sleep 300
+          echo "대기 완료"
+
+      # ── Instagram 게시 ────────────────────────────────────────
+      - name: Instagram 환경변수 확인
+        run: |
+          [ -z "$INSTAGRAM_ACCESS_TOKEN" ] && echo "::error::INSTAGRAM_ACCESS_TOKEN 없음" && exit 1
+          [ -z "$INSTAGRAM_USER_ID" ]      && echo "::error::INSTAGRAM_USER_ID 없음"      && exit 1
+          [ -z "$NEXT_PUBLIC_BASE_URL" ]   && echo "::error::NEXT_PUBLIC_BASE_URL 없음"   && exit 1
+          echo "환경변수 확인 완료"
+        env:
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+          INSTAGRAM_USER_ID: ${{ secrets.INSTAGRAM_USER_ID }}
+          NEXT_PUBLIC_BASE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL }}
+
+      - name: Instagram Carousel 게시 (B안)
+        id: instagram
+        continue-on-error: true
+        run: npm run instagram-planb
+        env:
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+          INSTAGRAM_USER_ID: ${{ secrets.INSTAGRAM_USER_ID }}
+          NEXT_PUBLIC_BASE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL }}
+          NODE_NO_WARNINGS: '1'
+
+      - name: publish-result-planb.json 커밋
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/publish-result-planb.json 2>/dev/null || true
+          git diff --staged --quiet || git commit -m "chore: planb publish result $(date +'%Y-%m-%d')"
+          git push || true
+
+      - name: 게시 결과 확인
+        if: steps.instagram.outcome == 'failure'
+        run: echo "::error::Instagram B안 게시 실패" && exit 1

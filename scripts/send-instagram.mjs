@@ -298,10 +298,11 @@ async function main() {
   }
 
   // ── 컨테이너 폴링 ─────────────────────────────────────────
+  // 상태 조회(GET)는 User Access Token이 필요 (Page Token 불가)
   console.log('\n[2] 컨테이너 처리 대기 중...');
   for (let i = 0; i < containerIds.length; i++) {
     process.stdout.write(`  카드 ${i + 1} 처리 중 `);
-    await waitForContainer(containerIds[i], `카드 ${i + 1}`, ACTUAL_TOKEN);
+    await waitForContainer(containerIds[i], `카드 ${i + 1}`, ACCESS_TOKEN);
   }
 
   // ── Carousel 컨테이너 생성 ────────────────────────────────
@@ -315,7 +316,7 @@ async function main() {
   });
   console.log(`  Carousel ID: ${carouselId}`);
   process.stdout.write('  Carousel 처리 중 ');
-  await waitForContainer(carouselId, 'Carousel', ACTUAL_TOKEN);
+  await waitForContainer(carouselId, 'Carousel', ACCESS_TOKEN);
 
   // ── 게시 ──────────────────────────────────────────────────
   console.log('\n[4] 게시 중...');

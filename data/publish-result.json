@@ -1,8 +1,8 @@
 {
-  "date": "2026-05-26",
-  "quizNumber": 13,
-  "executedAt": "2026-05-26T14:49:15.859Z",
-  "status": "failure",
-  "postId": null,
-  "error": "Instagram API GET 오류 [/17889739359532973]: Authorization Error"
+  "date": "2026-05-27",
+  "quizNumber": 14,
+  "executedAt": "2026-05-26T23:17:45.645Z",
+  "status": "success",
+  "postId": "18067619918374742",
+  "error": null
 }

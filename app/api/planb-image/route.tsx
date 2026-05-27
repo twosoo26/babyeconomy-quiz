@@ -350,7 +350,7 @@ function CtaCard({ today }: { today: ReturnType<typeof loadToday> }) {
             fontSize: 60, fontWeight: 700, color: C.white,
             lineHeight: 1.35, marginBottom: 25, fontFamily: 'display', wordBreak: 'keep-all',
           }}>
-            {today.sl5.length > 28 ? today.sl5.slice(0, 28) + '…' : today.sl5}
+            {today.sl5}
           </span>
           {/* 서브: fs:12 w:400 rgba(255,255,255,.75) mb:14 → fs:38 mb:44 */}
           <span style={{

@@ -74,33 +74,56 @@ function BrandBar({ light = false, date = '' }: { light?: boolean; date?: string
 function CoverCard({ today }: { today: ReturnType<typeof loadToday> }) {
   return (
     <Shell bg={C.cream}>
-      {/* 장식 이모지 */}
-      <div style={{ position: 'absolute', top: 24, right: -10, fontSize: 280, lineHeight: 1, opacity: 0.12, display: 'flex' }}>⭐</div>
-      <div style={{ position: 'absolute', bottom: 80, left: -20, fontSize: 200, lineHeight: 1, opacity: 0.09, display: 'flex' }}>🍒</div>
+      {/* 배경 원형 장식 (더 뚜렷하게) */}
+      <div style={{
+        position: 'absolute', top: -100, right: -100,
+        width: 500, height: 500, borderRadius: '50%',
+        background: C.cherryPale, display: 'flex',
+      }} />
+      <div style={{
+        position: 'absolute', bottom: 60, left: -80,
+        width: 320, height: 320, borderRadius: '50%',
+        background: C.cherryPale, opacity: 0.7, display: 'flex',
+      }} />
 
-      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: '110px 80px 0', position: 'relative' }}>
-        {/* 시리즈 번호 */}
-        <span style={{ fontSize: 22, color: C.gray, fontFamily: 'body', letterSpacing: 3, marginBottom: 32 }}>
-          #{String(today.number).padStart(3, '0')} · 엄마표 경제교육
-        </span>
+      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: '100px 80px 0', position: 'relative' }}>
+        {/* 시리즈 뱃지 (체리 레드) */}
+        <div style={{
+          display: 'flex', alignSelf: 'flex-start',
+          background: C.cherry, borderRadius: 8,
+          padding: '10px 24px', marginBottom: 44,
+        }}>
+          <span style={{ fontSize: 22, color: C.white, fontFamily: 'body', letterSpacing: 3, fontWeight: 700 }}>
+            #{String(today.number).padStart(3, '0')} · 엄마표 경제교육
+          </span>
+        </div>
 
-        {/* 메인 타이틀 */}
+        {/* 메인 타이틀 (크기 업) */}
         <span style={{
-          fontSize: 68, fontWeight: 700, color: C.dark,
-          lineHeight: 1.15, fontFamily: 'display',
-          wordBreak: 'keep-all', marginBottom: 48,
-          letterSpacing: -1.5,
+          fontSize: 80, fontWeight: 700, color: C.dark,
+          lineHeight: 1.1, fontFamily: 'display',
+          wordBreak: 'keep-all', marginBottom: 44,
+          letterSpacing: -2,
         }}>
           {today.title}
         </span>
 
-        {/* 구분선 */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 36 }}>
-          <div style={{ width: 48, height: 4, background: C.cherry, borderRadius: 2, display: 'flex' }} />
-          <div style={{ flex: 1, height: 1, background: 'rgba(0,0,0,0.10)', display: 'flex' }} />
+        {/* sl1 인용구 박스 */}
+        <div style={{
+          background: C.white, borderRadius: 16,
+          borderLeft: `6px solid ${C.cherry}`,
+          padding: '28px 36px', marginBottom: 40,
+          display: 'flex',
+        }}>
+          <span style={{
+            fontSize: 30, color: C.dark, fontFamily: 'body',
+            lineHeight: 1.55, wordBreak: 'keep-all',
+          }}>
+            {today.sl1}
+          </span>
         </div>
 
-        {/* 후킹 문구 */}
+        {/* 후킹 버튼 */}
         <div style={{
           background: C.cherry, borderRadius: 14,
           padding: '22px 36px', alignSelf: 'flex-start',

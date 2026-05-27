@@ -51,7 +51,7 @@ function splitSl1(sl1: string) {
   if (commaIdx !== -1) {
     return {
       sub:  sl1.slice(0, commaIdx + 1),                        // "용돈 줄 때,"
-      main: sl1.slice(commaIdx + 2).replace(/[?🚫✅❗⚠️🔻]/gu, '').trim(), // "이 말은 절대 금지"
+      main: sl1.slice(commaIdx + 2).replace('🚫','').replace('✅','').replace('❗','').replace('⚠️','').replace('🔻','').replace('?','').trim(),
     };
   }
   return { sub: '', main: sl1 };

@@ -98,10 +98,11 @@ async function waitForContainer(id, label, token) {
 }
 
 function buildCaption(today) {
-  // B안: caption 필드 직접 사용
+  // B안: caption 필드 + 참여 유도 CTA 자동 추가
   if (today.caption) {
-    const c = today.caption;
-    return c.length > 2200 ? c.slice(0, 2197) + '...' : c;
+    const cta = '\n\n━━━━━━━━━━━━━━\n혹시 이 말 해본 적 있으신가요?\n경험 있으시면 댓글로 알려주세요! 👇';
+    const full = today.caption + cta;
+    return full.length > 2200 ? full.slice(0, 2197) + '...' : full;
   }
   // 퀴즈: 자동 생성
   const date = (today.date || '').replace(/-/g, '.');

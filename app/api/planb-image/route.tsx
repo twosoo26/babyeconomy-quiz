@@ -32,6 +32,19 @@ function loadToday() {
   };
 }
 
+/** "\"금지어\" - 설명" 형태를 { quote, body }로 분리 */
+function splitSlide(text: string): { quote: string; body: string } {
+  const sep = '" - ';
+  const idx = text.indexOf(sep);
+  if (idx !== -1) {
+    return {
+      quote: text.slice(0, idx + 1).replace(/^"|"$/g, ''),  // 따옴표 제거
+      body:  text.slice(idx + sep.length),
+    };
+  }
+  return { quote: text, body: '' };
+}
+
 function Shell({ bg, children }: { bg: string; children: React.ReactNode }) {
   return (
     <div style={{
@@ -53,32 +66,32 @@ function CoverCard({ today }: { today: ReturnType<typeof loadToday> }) {
   return (
     <Shell bg={C.cream}>
       {/* 장식 이모지 */}
-      <div style={{ position: 'absolute', top: 178, right: 57, fontSize: 57,
-        lineHeight: 1, opacity: 0.6, display: 'flex', transform: 'rotate(-8deg)' }}>⭐</div>
-      <div style={{ position: 'absolute', right: 83, bottom: 220, fontSize: 70,
-        lineHeight: 1, opacity: 0.65, display: 'flex', transform: 'rotate(6deg)' }}>🍒</div>
+      <div style={{
+        position: 'absolute', top: 178, right: 57,
+        fontSize: 57, lineHeight: 1, opacity: 0.6,
+        display: 'flex', transform: 'rotate(-8deg)',
+      }}>⭐</div>
+      <div style={{
+        position: 'absolute', right: 83, bottom: 220,
+        fontSize: 70, lineHeight: 1, opacity: 0.65,
+        display: 'flex', transform: 'rotate(6deg)',
+      }}>🍒</div>
 
       {/* 상단 콘텐츠 */}
-      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: '95px 89px 0' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, paddingTop: 95, paddingLeft: 89, paddingRight: 89 }}>
         {/* 시리즈 레이블 */}
-        <span style={{
-          fontSize: 32, fontWeight: 600, color: C.gray,
-          letterSpacing: 5, marginBottom: 70, fontFamily: 'body',
-        }}>
+        <span style={{ fontSize: 32, fontWeight: 600, color: C.gray, letterSpacing: 5, marginBottom: 70, fontFamily: 'body' }}>
           {num} — 엄마표 경제교육
         </span>
 
         {/* sl1 소제목 */}
-        <span style={{
-          fontSize: 44, fontWeight: 500, color: C.gray,
-          marginBottom: 26, fontFamily: 'body',
-        }}>
+        <span style={{ fontSize: 44, fontWeight: 500, color: C.gray, marginBottom: 26, fontFamily: 'body' }}>
           {today.sl1}
         </span>
 
         {/* 메인 타이틀 */}
         <span style={{
-          fontSize: titleSize, fontWeight: 800, color: C.dark,
+          fontSize: titleSize, fontWeight: 700, color: C.dark,
           lineHeight: 1.1, letterSpacing: -4, fontFamily: 'display',
           wordBreak: 'keep-all',
         }}>
@@ -96,7 +109,8 @@ function CoverCard({ today }: { today: ReturnType<typeof loadToday> }) {
 
       {/* 하단 체리 블록 */}
       <div style={{
-        background: C.pk, padding: '48px 89px', flexShrink: 0,
+        background: C.pk, paddingTop: 48, paddingBottom: 48,
+        paddingLeft: 89, paddingRight: 89, flexShrink: 0,
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
       }}>
         <span style={{ fontSize: 41, fontWeight: 700, color: C.white, fontFamily: 'body' }}>
@@ -110,14 +124,14 @@ function CoverCard({ today }: { today: ReturnType<typeof loadToday> }) {
 
 // ── 카드 2·3·4: 본문 ─────────────────────────────────────────
 function ContentCard({
-  today, num, label, sticker, rotate, titleText, bodyText, pageTitle,
+  num, label, sticker, rotate, slideText, pageLabel,
 }: {
-  today: ReturnType<typeof loadToday>;
   num: string; label: string; sticker: string; rotate: string;
-  titleText: string; bodyText: string; pageTitle: string;
+  slideText: string; pageLabel: string;
 }) {
-  const titleLen = titleText.length;
-  const titleSize = titleLen > 14 ? (titleLen > 20 ? 56 : 66) : 76;
+  const { quote, body } = splitSlide(slideText);
+  const quoteLen = quote.length;
+  const quoteSize = quoteLen > 14 ? (quoteLen > 20 ? 58 : 68) : 80;
 
   return (
     <Shell bg={C.white}>
@@ -130,60 +144,56 @@ function ContentCard({
         {sticker}
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: '95px 83px 0' }}>
-        {/* 상단 헤더 */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 38, marginBottom: 64 }}>
-          {/* 대형 번호 */}
+      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, paddingTop: 95, paddingLeft: 83, paddingRight: 83 }}>
+
+        {/* 상단 헤더: 번호 + 레이블 + 금지어 */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 38, marginBottom: 56 }}>
           <span style={{
-            fontSize: 159, fontWeight: 800, color: C.pkPale,
-            lineHeight: 1, flexShrink: 0, marginTop: -6, fontFamily: 'display',
+            fontSize: 159, fontWeight: 700, color: C.pkPale,
+            lineHeight: 1, flexShrink: 0, fontFamily: 'display',
           }}>
             {num}
           </span>
-          {/* 레이블 + 제목 */}
-          <div style={{ display: 'flex', flexDirection: 'column', paddingTop: 6 }}>
-            <span style={{
-              fontSize: 32, fontWeight: 600, color: C.pk,
-              letterSpacing: 4, marginBottom: 19, fontFamily: 'body',
-            }}>
+          <div style={{ display: 'flex', flexDirection: 'column', paddingTop: 8 }}>
+            <span style={{ fontSize: 32, fontWeight: 600, color: C.pk, letterSpacing: 4, marginBottom: 20, fontFamily: 'body' }}>
               {label}
             </span>
             <span style={{
-              fontSize: titleSize, fontWeight: 800, color: C.dark,
+              fontSize: quoteSize, fontWeight: 700, color: C.dark,
               letterSpacing: -2, fontFamily: 'display', wordBreak: 'keep-all',
             }}>
-              {titleText}
+              "{quote}"
             </span>
           </div>
         </div>
 
         {/* 구분선 */}
-        <div style={{ height: 3, background: '#F5E8E8', marginBottom: 57, display: 'flex' }} />
+        <div style={{ height: 3, background: '#F5E8E8', marginBottom: 56, display: 'flex' }} />
 
         {/* 설명 박스 */}
-        <div style={{ background: C.pkLight, borderRadius: 38, padding: '51px 57px' }}>
-          <span style={{
-            fontSize: 35, fontWeight: 700, color: C.pkDeep,
-            marginBottom: 25, fontFamily: 'body', display: 'flex',
-          }}>
+        <div style={{
+          background: C.pkLight, borderRadius: 38,
+          paddingTop: 51, paddingBottom: 51, paddingLeft: 57, paddingRight: 57,
+          display: 'flex', flexDirection: 'column',
+        }}>
+          <span style={{ fontSize: 35, fontWeight: 700, color: C.pkDeep, marginBottom: 24, fontFamily: 'body' }}>
             왜 안 될까요?
           </span>
-          <span style={{
-            fontSize: 45, fontWeight: 400, color: '#3A3A3A',
-            lineHeight: 1.85, fontFamily: 'body', wordBreak: 'keep-all',
-          }}>
-            {bodyText}
+          <span style={{ fontSize: 48, fontWeight: 400, color: '#3A3A3A', lineHeight: 1.7, fontFamily: 'body', wordBreak: 'keep-all' }}>
+            {body || slideText}
           </span>
         </div>
+
       </div>
 
       {/* 페이지 번호 */}
       <div style={{
         position: 'absolute', bottom: 57, right: 76,
-        fontSize: 32, fontWeight: 600, color: '#ECC8C8',
-        letterSpacing: 3, fontFamily: 'body', display: 'flex',
+        display: 'flex',
       }}>
-        {pageTitle}
+        <span style={{ fontSize: 32, fontWeight: 600, color: '#ECC8C8', letterSpacing: 3, fontFamily: 'body' }}>
+          {pageLabel}
+        </span>
       </div>
     </Shell>
   );
@@ -191,7 +201,11 @@ function ContentCard({
 
 // ── 카드 5: CTA ─────────────────────────────────────────────
 function CtaCard({ today }: { today: ReturnType<typeof loadToday> }) {
-  const items = [today.sl2, today.sl3, today.sl4];
+  const items = [
+    splitSlide(today.sl2).quote,
+    splitSlide(today.sl3).quote,
+    splitSlide(today.sl4).quote,
+  ];
 
   return (
     <Shell bg={C.pk}>
@@ -206,87 +220,66 @@ function CtaCard({ today }: { today: ReturnType<typeof loadToday> }) {
         width: 318, height: 318, borderRadius: '50%',
         background: C.pkDeep, opacity: 0.22, display: 'flex',
       }} />
-      <div style={{
-        position: 'absolute', top: 64, right: 76,
-        fontSize: 76, display: 'flex', transform: 'rotate(15deg)',
-      }}>🌟</div>
+      <div style={{ position: 'absolute', top: 64, right: 76, fontSize: 76, display: 'flex', transform: 'rotate(15deg)' }}>
+        🌟
+      </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', flex: 1,
-        padding: '89px 76px 0', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          {/* SUMMARY 레이블 */}
-          <span style={{
-            fontSize: 32, fontWeight: 600, color: 'rgba(255,255,255,0.5)',
-            letterSpacing: 5, marginBottom: 44, fontFamily: 'body',
-          }}>
-            TODAY'S SUMMARY
+      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, paddingTop: 89, paddingLeft: 76, paddingRight: 76, paddingBottom: 89 }}>
+
+        {/* SUMMARY 레이블 */}
+        <span style={{ fontSize: 32, fontWeight: 600, color: 'rgba(255,255,255,0.5)', letterSpacing: 5, marginBottom: 44, fontFamily: 'body' }}>
+          TODAY'S SUMMARY
+        </span>
+
+        {/* 흰 요약 카드 */}
+        <div style={{
+          background: C.white, borderRadius: 44,
+          paddingTop: 57, paddingBottom: 57, paddingLeft: 64, paddingRight: 64,
+          marginBottom: 57, display: 'flex', flexDirection: 'column',
+        }}>
+          <span style={{ fontSize: 35, fontWeight: 600, color: C.gray, letterSpacing: 2, marginBottom: 44, fontFamily: 'body' }}>
+            오늘 기억할 3가지 🍒
           </span>
 
-          {/* 흰 요약 카드 */}
-          <div style={{
-            background: C.white, borderRadius: 44,
-            padding: '57px 64px', marginBottom: 57,
-            display: 'flex', flexDirection: 'column',
-          }}>
-            <span style={{
-              fontSize: 35, fontWeight: 600, color: C.gray,
-              letterSpacing: 2, marginBottom: 44, fontFamily: 'body',
-            }}>
-              오늘 기억할 3가지 🍒
-            </span>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              {items.map((text, i) => (
-                <div key={i} style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 38, padding: '19px 0' }}>
-                    <span style={{
-                      fontSize: 35, fontWeight: 800, color: C.pk,
-                      width: 57, flexShrink: 0, fontFamily: 'display',
-                    }}>
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
-                    <span style={{
-                      fontSize: 41, fontWeight: 600, color: C.dark,
-                      fontFamily: 'body', wordBreak: 'keep-all',
-                    }}>
-                      {text.length > 20 ? text.slice(0, 20) + '…' : text}
-                    </span>
-                  </div>
-                  {i < 2 && (
-                    <div style={{ height: 3, background: '#F5E8E8', display: 'flex' }} />
-                  )}
-                </div>
-              ))}
-            </div>
+          {/* 항목 1 */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 38, paddingTop: 19, paddingBottom: 19 }}>
+            <span style={{ fontSize: 35, fontWeight: 700, color: C.pk, width: 57, flexShrink: 0, fontFamily: 'display' }}>01</span>
+            <span style={{ fontSize: 41, fontWeight: 600, color: C.dark, fontFamily: 'body', wordBreak: 'keep-all' }}>"{items[0]}" 🚫</span>
+          </div>
+          <div style={{ height: 3, background: '#F5E8E8', display: 'flex' }} />
+
+          {/* 항목 2 */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 38, paddingTop: 19, paddingBottom: 19 }}>
+            <span style={{ fontSize: 35, fontWeight: 700, color: C.pk, width: 57, flexShrink: 0, fontFamily: 'display' }}>02</span>
+            <span style={{ fontSize: 41, fontWeight: 600, color: C.dark, fontFamily: 'body', wordBreak: 'keep-all' }}>"{items[1]}" 🚫</span>
+          </div>
+          <div style={{ height: 3, background: '#F5E8E8', display: 'flex' }} />
+
+          {/* 항목 3 */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 38, paddingTop: 19, paddingBottom: 19 }}>
+            <span style={{ fontSize: 35, fontWeight: 700, color: C.pk, width: 57, flexShrink: 0, fontFamily: 'display' }}>03</span>
+            <span style={{ fontSize: 41, fontWeight: 600, color: C.dark, fontFamily: 'body', wordBreak: 'keep-all' }}>"{items[2]}" 🚫</span>
           </div>
         </div>
 
         {/* 하단 텍스트 */}
-        <div style={{ display: 'flex', flexDirection: 'column', paddingBottom: 89 }}>
-          <span style={{
-            fontSize: 60, fontWeight: 800, color: C.white,
-            lineHeight: 1.35, marginBottom: 25, fontFamily: 'display',
-            wordBreak: 'keep-all',
-          }}>
-            {today.sl5.length > 30 ? today.sl5.slice(0, 30) + '…' : today.sl5}
+        <span style={{ fontSize: 60, fontWeight: 700, color: C.white, lineHeight: 1.35, marginBottom: 25, fontFamily: 'display', wordBreak: 'keep-all' }}>
+          {today.sl5.length > 30 ? today.sl5.slice(0, 30) + '…' : today.sl5}
+        </span>
+        <span style={{ fontSize: 38, fontWeight: 400, color: 'rgba(255,255,255,0.75)', marginBottom: 44, fontFamily: 'body' }}>
+          📌 저장해두고 오늘 확인해요
+        </span>
+        <div style={{
+          display: 'flex', alignSelf: 'flex-start',
+          borderTop: '5px solid rgba(255,255,255,0.55)',
+          borderBottom: '5px solid rgba(255,255,255,0.55)',
+          borderLeft: '5px solid rgba(255,255,255,0.55)',
+          borderRight: '5px solid rgba(255,255,255,0.55)',
+          borderRadius: 76, paddingTop: 25, paddingBottom: 25, paddingLeft: 64, paddingRight: 64,
+        }}>
+          <span style={{ fontSize: 35, fontWeight: 600, color: C.white, letterSpacing: 2, fontFamily: 'body' }}>
+            팔로우 → 매주 새 콘텐츠
           </span>
-          <span style={{
-            fontSize: 38, fontWeight: 400, color: 'rgba(255,255,255,0.75)',
-            marginBottom: 44, fontFamily: 'body',
-          }}>
-            📌 저장해두고 오늘 확인해요
-          </span>
-          <div style={{
-            display: 'flex', alignSelf: 'flex-start',
-            border: '5px solid rgba(255,255,255,0.55)',
-            borderRadius: 76, padding: '25px 64px',
-          }}>
-            <span style={{
-              fontSize: 35, fontWeight: 600, color: C.white,
-              letterSpacing: 2, fontFamily: 'body',
-            }}>
-              팔로우 → 매주 새 콘텐츠
-            </span>
-          </div>
         </div>
       </div>
     </Shell>
@@ -312,12 +305,9 @@ export async function GET(request: NextRequest) {
 
     const slides: Record<number, React.ReactElement> = {
       1: <CoverCard today={today} />,
-      2: <ContentCard today={today} num="01" label="첫 번째 금지어" sticker="😬" rotate="-10deg"
-           titleText={today.sl2} bodyText={today.sl2} pageTitle="2 / 5" />,
-      3: <ContentCard today={today} num="02" label="두 번째 금지어" sticker="😢" rotate="8deg"
-           titleText={today.sl3} bodyText={today.sl3} pageTitle="3 / 5" />,
-      4: <ContentCard today={today} num="03" label="세 번째 금지어" sticker="😤" rotate="-6deg"
-           titleText={today.sl4} bodyText={today.sl4} pageTitle="4 / 5" />,
+      2: <ContentCard num="01" label="첫 번째 금지어" sticker="😬" rotate="-10deg" slideText={today.sl2} pageLabel="2 / 5" />,
+      3: <ContentCard num="02" label="두 번째 금지어" sticker="😢" rotate="8deg"   slideText={today.sl3} pageLabel="3 / 5" />,
+      4: <ContentCard num="03" label="세 번째 금지어" sticker="😤" rotate="-6deg"  slideText={today.sl4} pageLabel="4 / 5" />,
       5: <CtaCard today={today} />,
     };
 
